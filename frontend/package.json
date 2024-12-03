@@ -11,9 +11,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@klinecharts/pro": "^0.1.1",
     "antd": "^5.22.1",
-    "klinecharts": "^10.0.0-alpha1",
-    "lightweight-charts": "^4.2.1",
+    "klinecharts": "^9.8.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "stock": "file:"

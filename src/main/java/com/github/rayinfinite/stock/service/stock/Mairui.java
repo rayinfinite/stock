@@ -3,13 +3,16 @@ package com.github.rayinfinite.stock.service.stock;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.rayinfinite.stock.entity.MairuiInputData;
+import com.github.rayinfinite.stock.entity.MarketDepth;
 import com.github.rayinfinite.stock.entity.StockData;
 import com.github.rayinfinite.stock.entity.StockUrlProperties;
+import com.github.rayinfinite.stock.entity.exception.WebCrawlerException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
 
+@Component
 @RequiredArgsConstructor
 public class Mairui implements StockService {
     private static final String URL = "https://api.mairui.club/hszbl/fsjy/{id}/dn/{token}";
@@ -17,13 +20,15 @@ public class Mairui implements StockService {
     private final StockUrlProperties properties;
 
     @Override
-    public List<StockData> getStockData(String stockCode) throws IOException, InterruptedException {
+    public List<StockData> getStockData(String stockCode, int period) {
         properties.setUrl(URL);
         properties.setHeader(HEADER);
+        stockCode = stockCode.toLowerCase();
         if (stockCode.startsWith("sh") || stockCode.startsWith("sz")) {
             stockCode = stockCode.substring(2);
         }
-        return getStockData(stockCode, properties);
+        String response = getStockData(stockCode, properties);
+        return parseJson(response);
     }
 
     @Override
@@ -34,8 +39,13 @@ public class Mairui implements StockService {
             });
             return mairuiInputDataList.stream().map(StockData::new).toList();
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new WebCrawlerException(e);
         }
+    }
+
+    @Override
+    public MarketDepth getMarketDepth(String stockCode) {
+        throw new UnsupportedOperationException("Market depth is not supported by Mairui.");
     }
 
     @Override

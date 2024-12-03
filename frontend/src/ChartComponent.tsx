@@ -1,95 +1,32 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Button, Radio } from 'antd';
-import { createChart } from "lightweight-charts";
-import { getStockData } from './api';
+// 引入js
+import { KLineChartPro, DefaultDatafeed } from "@klinecharts/pro";
+// 引入样式
+import "@klinecharts/pro/dist/klinecharts-pro.css";
+import { useEffect } from "react";
 
 const ChartComponent = () => {
-  const chartContainerRef = useRef(null);
-  const [chartType, setChartType] = useState('Candlestick');
-  const [timePeriod, setTimePeriod] = useState('D');
-  const [data, setData] = useState([]);
-
   useEffect(() => {
-    if (chartContainerRef.current) {
-      const chart = createChart(chartContainerRef.current, {
-        width: 800,
-        height: 400,
-        layout: {
-          backgroundColor: '#ffffff',
-          textColor: '#333',
-        },
-        grid: {
-          vertLines: {
-            color: '#eee',
-          },
-          horzLines: {
-            color: '#eee',
-          },
-        },
-        // crosshair: {
-        //   mode: LightweightCharts.CrosshairMode.Normal,
-        // },
-        priceScale: {
-          borderColor: '#ddd',
-        },
-        timeScale: {
-          borderColor: '#ddd',
-        },
-      });
-
-      let series;
-      if (chartType === 'Candlestick') {
-        series = chart.addCandlestickSeries();
-      } else {
-        series = chart.addAreaSeries({
-          topColor: 'rgba(59, 150, 255, 0.4)',
-          bottomColor: 'rgba(59, 150, 255, 0)',
-          lineColor: 'rgba(59, 150, 255, 1)',
-        });
-      }
-
-      // const filteredData = filterDataByTimePeriod(data, timePeriod);
-      getData(series);
-
-      return () => {
-        chart.remove();
-      };
-    }
-  }, [data, chartType, timePeriod]);
-
-
-  const getData = async (series) => {
-    const stockData = await getStockData("000001");
-    const updatedData = stockData.map(item => {
-      const time = new Date(item.date);
-      return {
-        ...item,
-        time: time.getTime() / 1000,
-      };
+    // 创建实例
+    const chart = new KLineChartPro({
+      container: document.getElementById("klinechartpro"),
+      // 初始化标的信息
+      symbol: {
+        exchange: "XNYS",
+        market: "stocks",
+        name: "Alibaba Group Holding Limited American Depositary Shares, each represents eight Ordinary Shares",
+        shortName: "BABA",
+        ticker: "BABA",
+        priceCurrency: "usd",
+        type: "ADRC",
+      },
+      // 初始化周期
+      period: { multiplier: 15, timespan: "minute", text: "15m" },
+      // 这里使用默认的数据接入，如果实际使用中也使用默认数据，需要去 https://polygon.io/ 申请 API key
+      datafeed: new DefaultDatafeed(`IR3qS2VjZ7kIDgnlqKxSmCRHqyBaMh9q`),
     });
-    series.setData(updatedData);
-  };
+  }, []);
 
-  const filterDataByTimePeriod = (data, period) => {
-    // 这里可以根据实际需求对数据进行过滤
-    // 目前仅返回原始数据
-    return data;
-  };
-
-  return (
-    <div>
-      <div ref={chartContainerRef} />
-      <Radio.Group defaultValue="Candlestick" buttonStyle="solid" onChange={(e) => setChartType(e.target.value)}>
-        <Radio.Button value="Candlestick">K线图</Radio.Button>
-        <Radio.Button value="Area">面积图</Radio.Button>
-      </Radio.Group>
-      <Radio.Group defaultValue="D" buttonStyle="solid" onChange={(e) => setTimePeriod(e.target.value)} style={{ marginLeft: 16 }}>
-        <Radio.Button value="D">日线</Radio.Button>
-        <Radio.Button value="W">周线</Radio.Button>
-        <Radio.Button value="M">月线</Radio.Button>
-      </Radio.Group>
-    </div>
-  );
+  return <div id="klinechartpro" />;
 };
 
 export default ChartComponent;

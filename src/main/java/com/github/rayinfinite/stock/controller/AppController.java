@@ -5,9 +5,11 @@ import com.github.rayinfinite.stock.entity.StockData;
 import com.github.rayinfinite.stock.service.AppService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -18,8 +20,16 @@ public class AppController {
     private final AppService service;
 
     @GetMapping()
-    public Response getStockData(String stockCode) throws IOException, InterruptedException {
-        List<StockData> data = service.getStockData(stockCode);
+    public Response getStockData(String stockCode, @RequestParam(required = false) Integer period) {
+        if (period == null) {
+            period = 0;
+        }
+        List<StockData> data = service.getStockData(stockCode, period);
         return new Response(data);
+    }
+
+    @GetMapping("/marketDepth")
+    public Response getMarketDepth(String stockCode) {
+        return new Response(service.getMarketDepth(stockCode));
     }
 }

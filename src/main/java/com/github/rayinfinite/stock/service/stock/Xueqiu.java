@@ -2,29 +2,36 @@ package com.github.rayinfinite.stock.service.stock;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.rayinfinite.stock.entity.MarketDepth;
 import com.github.rayinfinite.stock.entity.StockData;
 import com.github.rayinfinite.stock.entity.StockUrlProperties;
+import com.github.rayinfinite.stock.entity.exception.WebCrawlerException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Component
 @RequiredArgsConstructor
 public class Xueqiu implements StockService {
-    private static final String URL = "https://stock.xueqiu.com/v5/stock/chart/kline.json?" +
-            "symbol={id}&begin={begin}&period=day&type=before&count=-{count}";
-    private static final String HEADER = "url";
+    private static final String STOCK_URL = "https://stock.xueqiu.com/v5/stock/chart/kline.json?" +
+            "symbol={id}&begin={begin}&period={period}&type=before&count=-{count}";
+    private static final String HEADER = "cookie";
+    private static final List<String> periodList = List.of("day", "week", "month", "quarter", "year");
+    private static final String MARKET_DEPTH_URL = "https://stock.xueqiu.com/v5/stock/realtime/pankou.json?symbol={id}";
     private final StockUrlProperties properties;
 
     @Override
-    public List<StockData> getStockData(String stockCode) throws IOException, InterruptedException {
-        String url = URL.replace("{begin}", String.valueOf(System.currentTimeMillis()))
-                .replace("{count}", "500");
+    public List<StockData> getStockData(String stockCode, int period) {
+        String url = STOCK_URL.replace("{begin}", String.valueOf(System.currentTimeMillis()))
+                .replace("{count}", "500")
+                .replace("{period}", periodList.get(period));
         properties.setUrl(url);
         properties.setHeader(HEADER);
-        return getStockData(stockCode, properties);
+        String response = getStockData(stockCode.toUpperCase(), properties);
+        return parseJson(response);
     }
 
     @Override
@@ -33,17 +40,17 @@ public class Xueqiu implements StockService {
         try {
             rootNode = objectMapper.readTree(response);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new WebCrawlerException(e);
         }
-        JsonNode columnsNode = rootNode.path("data").path("columns");
-        if (!columnsNode.isArray()) {
-            throw new IllegalArgumentException("The 'columns' node is not an array.");
+        JsonNode itemNode = rootNode.path("data").path("item");
+        if (!itemNode.isArray()) {
+            throw new IllegalArgumentException("The 'item' node is not an array.");
         }
         List<StockData> result = new ArrayList<>();
-        for (Iterator<JsonNode> it = columnsNode.elements(); it.hasNext(); ) {
+        for (Iterator<JsonNode> it = itemNode.elements(); it.hasNext(); ) {
             JsonNode rowNode = it.next();
             if (!rowNode.isArray()) {
-                throw new IllegalArgumentException("Each element in 'columns' should be an array.");
+                throw new IllegalArgumentException("Each element in 'item' should be an array.");
             }
 
             List<String> row = new ArrayList<>();
@@ -51,11 +58,57 @@ public class Xueqiu implements StockService {
                 row.add(cellNode.asText());
             }
 // "timestamp","volume","open","high","low","close","chg","percent","turnoverrate","amount","volume_post","amount_post"
-            StockData stockData = new StockData(row.get(0), row.get(2), row.get(5), row.get(3), row.get(4),
+            long timestamp = Long.parseLong(row.get(0));
+            StockData stockData = new StockData(timestamp, row.get(2), row.get(5), row.get(3), row.get(4),
                     row.get(1), row.get(8));
             result.add(stockData);
         }
         return result;
+    }
+
+    @Override
+    public MarketDepth getMarketDepth(String stockCode) {
+        properties.setUrl(MARKET_DEPTH_URL);
+        properties.setHeader(HEADER);
+        System.out.println(properties.getHeader());
+        String response = getStockData(stockCode.toUpperCase(), properties);
+        System.out.println(response);
+        return parseMarketDepthJson(response);
+    }
+
+    public MarketDepth parseMarketDepthJson(String response) {
+        System.out.println(response);
+        JsonNode rootNode;
+        try {
+            rootNode = objectMapper.readTree(response);
+        } catch (JsonProcessingException e) {
+            throw new WebCrawlerException(e);
+        }
+        JsonNode itemNode = rootNode.path("data");
+//        if (!itemNode.isObject()) {
+//            throw new IllegalArgumentException("The 'item' node is not an object.");
+//        }
+        MarketDepth marketDepth = new MarketDepth();
+        marketDepth.setStockCode(itemNode.path("symbol").asText());
+        marketDepth.setPrice(itemNode.path("current").asText());
+        marketDepth.setTimestamp(itemNode.path("timestamp").asLong());
+        marketDepth.setBuyPct(itemNode.path("buypct").asText());
+        marketDepth.setSellPct(itemNode.path("sellpct").asText());
+        List<String> buyPrices = new ArrayList<>();
+        List<String> buyVolumes = new ArrayList<>();
+        List<String> sellPrices = new ArrayList<>();
+        List<String> sellVolumes = new ArrayList<>();
+        for(int i=1;i<=5;i++){
+            buyPrices.add(itemNode.path("bp"+i).asText());
+            buyVolumes.add(itemNode.path("bc"+i).asText());
+            sellPrices.add(itemNode.path("sp"+i).asText());
+            sellVolumes.add(itemNode.path("sc"+i).asText());
+        }
+        marketDepth.setBuyPrices(buyPrices);
+        marketDepth.setBuyVolumes(buyVolumes);
+        marketDepth.setSellPrices(sellPrices);
+        marketDepth.setSellVolumes(sellVolumes);
+        return marketDepth;
     }
 
     @Override

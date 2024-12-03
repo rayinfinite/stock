@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class StockData {
-    String timestamp;
+    long timestamp;
     String open;
     String close;
     String high;
@@ -16,7 +16,7 @@ public class StockData {
     String turnover;
 
     public StockData(MairuiInputData input) {
-        this.timestamp = input.d;
+        this.timestamp = Long.parseLong(input.d);
         this.open = input.o;
         this.high = input.h;
         this.low = input.l;
