@@ -1,13 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useViewport } from "./ViewportContext";
 
-import { init, dispose, Chart, Nullable } from "klinecharts";
-import { getStockData } from "./api";
-import { Input, Radio, RadioChangeEvent } from "antd";
-import MarketDepth from "./MarketDepth";
-import StockInfo from "./StockInfo";
-import TickTrade from "./TickTrade";
-import KLineChart from "./KLineChart";
+import MarketDepth from "./component/MarketDepth";
+import StockInfo from "./component/StockInfo";
+import TickTrade from "./component/TickTrade";
+import KLineChart from "./component/KLineChart";
 
 const App = () => {
   const viewport = useViewport();
@@ -21,8 +18,8 @@ const App = () => {
       <KLineChart stockCode={stockCode} setStockCode={setStockCode} />
       {stockCode && (
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <MarketDepth stockCode={stockCode} />
           <TickTrade stockCode={stockCode} />
+          <MarketDepth stockCode={stockCode} />
         </div>
       )}
     </div>

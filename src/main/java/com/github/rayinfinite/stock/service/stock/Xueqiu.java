@@ -14,15 +14,15 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class Xueqiu implements StockService {
-    private static final String STOCK_URL = "https://stock.xueqiu.com/v5/stock/chart/kline.json?" +
-            "symbol={id}&begin={begin}&period={period}&type=before&count=-{count}";
+    private static final String BASE_URL = "https://stock.xueqiu.com/v5/stock";
+    private static final String STOCK_URL = BASE_URL + "/chart/kline.json?symbol={id}&begin={begin}&period" +
+            "={period}&type=before&count=-{count}";
+    private static final String MARKET_DEPTH_URL = BASE_URL + "/realtime/pankou.json?symbol={id}";
+    private static final String STOCK_INFO_URL = BASE_URL + "/quote.json?symbol={id}&extend=detail";
+    private static final String TICK_TRADE_URL = BASE_URL + "/history/trade.json?symbol={id}";
     private static final String HEADER = "cookie";
     private static final List<String> periodList = List.of("day", "week", "month", "quarter", "year");
     private static final List<String> negativePeriodList = List.of("1m");
-    private static final String MARKET_DEPTH_URL = "https://stock.xueqiu.com/v5/stock/realtime/pankou.json?symbol={id}";
-    private static final String STOCK_INFO_URL = "https://stock.xueqiu.com/v5/stock/quote" +
-            ".json?symbol={id}&extend=detail";
-    private static final String TICK_TRADE_URL = "https://stock.xueqiu.com/v5/stock/history/trade.json?symbol={id}";
     private final StockUrlProperties properties;
 
     @Override
@@ -61,8 +61,8 @@ public class Xueqiu implements StockService {
             }
 // "timestamp","volume","open","high","low","close","chg","percent","turnoverrate","amount","volume_post","amount_post"
             long timestamp = Long.parseLong(row.get(0));
-            StockData stockData = new StockData(timestamp, row.get(2), row.get(5), row.get(3), row.get(4),
-                    row.get(1), row.get(8));
+            StockData stockData = new StockData(timestamp, row.get(2), row.get(5), row.get(3), row.get(4), row.get(1),
+                    row.get(8));
             result.add(stockData);
         }
         return result;
@@ -172,7 +172,7 @@ public class Xueqiu implements StockService {
             TickTrade tickTrade = new TickTrade();
             tickTrade.setTimestamp(rowNode.path("timestamp").asLong());
             tickTrade.setCurrent(rowNode.path("current").asText());
-            tickTrade.setVolume(rowNode.path("trade_volume").asLong()/100);// 100股为一手
+            tickTrade.setVolume(rowNode.path("trade_volume").asLong() / 100);// 100股为一手
             result.add(tickTrade);
         }
         return result;

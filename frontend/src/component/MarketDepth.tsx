@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMarketDepthData } from "./api";
+import { getMarketDepthData } from "../api";
 
 interface MarketDepthProps {
   stockCode: string;
@@ -8,6 +8,7 @@ interface MarketDepthProps {
 const MarketDepth: React.FC<MarketDepthProps> = ({ stockCode }) => {
   const [data, setData] = useState<any>(null);
   useEffect(() => {
+    setData(undefined);
     const fetchData = async () => {
       const data = await getMarketDepthData(stockCode);
       if (data.timestamp && data.timestamp !== "0") {
@@ -16,7 +17,7 @@ const MarketDepth: React.FC<MarketDepthProps> = ({ stockCode }) => {
     };
     fetchData();
 
-    const intervalId = setInterval(fetchData, 5000);
+    const intervalId = setInterval(fetchData, 3000);
     return () => clearInterval(intervalId);
   }, [stockCode]);
 
@@ -46,7 +47,7 @@ const MarketDepth: React.FC<MarketDepthProps> = ({ stockCode }) => {
         {data.sellPrices
           .slice()
           .reverse()
-          .map((price, index) => (
+          .map((price: string, index: number) => (
             <div key={index} style={{ display: "flex", justifyContent: "space-between", maxWidth: 200 }}>
               <span>
                 Sell {data.sellPrices.length - index}: {round2decimal(price)}
@@ -65,7 +66,7 @@ const MarketDepth: React.FC<MarketDepthProps> = ({ stockCode }) => {
           ))}
       </div>
       <div>
-        {data.buyPrices.map((price, index) => (
+        {data.buyPrices.map((price: string, index: number) => (
           <div key={index} style={{ display: "flex", justifyContent: "space-between", maxWidth: 200 }}>
             <span>
               Buy {index + 1}: {round2decimal(price)}

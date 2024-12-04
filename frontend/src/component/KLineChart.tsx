@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Radio, Input, RadioChangeEvent } from "antd";
 import { Chart, dispose, init, Nullable } from "klinecharts";
-import { getStockData } from "./api";
+import { getStockData } from "../api";
 
 interface KLineChartProps {
   stockCode: string;
@@ -15,12 +15,12 @@ const KLineChart: React.FC<KLineChartProps> = ({ stockCode, setStockCode }) => {
   useEffect(() => {
     initChart();
     getData(stockCode, period);
-    const intervalId = setInterval(() => getData(stockCode, period), 5000);
+    const intervalId = setInterval(() => getData(stockCode, period), 6000);
     return () => {
       dispose("chart");
       clearInterval(intervalId);
     };
-  }, []);
+  }, [stockCode, period]);
 
   const periodOptions = [
     { label: "Day", value: "0" },

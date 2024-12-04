@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTickTradeData } from "./api";
+import { getTickTradeData } from "../api";
 
 interface MarketDepthProps {
   stockCode: string;
@@ -8,6 +8,7 @@ interface MarketDepthProps {
 const TickTrade: React.FC<MarketDepthProps> = ({ stockCode }) => {
   const [data, setData] = useState<any>(null);
   useEffect(() => {
+    setData(undefined);
     const fetchData = async () => {
       const data = await getTickTradeData(stockCode);
       if (data[0] && data[0].timestamp != "0") {
@@ -16,7 +17,7 @@ const TickTrade: React.FC<MarketDepthProps> = ({ stockCode }) => {
     };
     fetchData();
 
-    const intervalId = setInterval(fetchData, 6000);
+    const intervalId = setInterval(fetchData, 3000);
     return () => clearInterval(intervalId);
   }, [stockCode]);
 
