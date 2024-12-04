@@ -3,7 +3,6 @@ package com.github.rayinfinite.stock.service.stock;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.rayinfinite.stock.entity.MairuiInputData;
-import com.github.rayinfinite.stock.entity.MarketDepth;
 import com.github.rayinfinite.stock.entity.StockData;
 import com.github.rayinfinite.stock.entity.StockUrlProperties;
 import com.github.rayinfinite.stock.entity.exception.WebCrawlerException;
@@ -31,7 +30,6 @@ public class Mairui implements StockService {
         return parseJson(response);
     }
 
-    @Override
     public List<StockData> parseJson(String response) {
         List<MairuiInputData> mairuiInputDataList;
         try {
@@ -41,11 +39,6 @@ public class Mairui implements StockService {
         } catch (JsonProcessingException e) {
             throw new WebCrawlerException(e);
         }
-    }
-
-    @Override
-    public MarketDepth getMarketDepth(String stockCode) {
-        throw new UnsupportedOperationException("Market depth is not supported by Mairui.");
     }
 
     @Override

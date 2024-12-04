@@ -32,4 +32,14 @@ public class AppController {
     public Response getMarketDepth(String stockCode) {
         return new Response(service.getMarketDepth(stockCode));
     }
+
+    @GetMapping("/stockInfo")
+    public Response getStockInfo(String stockCode) {
+        return new Response(service.getStockInfo(stockCode));
+    }
+
+    @GetMapping("/tickTrade")
+    public Response getTickTrade(String stockCode) {
+        return new Response(service.getTickTrade(stockCode));
+    }
 }

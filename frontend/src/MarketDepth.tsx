@@ -10,11 +10,13 @@ const MarketDepth: React.FC<MarketDepthProps> = ({ stockCode }) => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await getMarketDepthData(stockCode);
-      setData(data);
+      if (data.timestamp && data.timestamp !== "0") {
+        setData(data);
+      }
     };
     fetchData();
 
-    const intervalId = setInterval(fetchData, 2000);
+    const intervalId = setInterval(fetchData, 5000);
     return () => clearInterval(intervalId);
   }, [stockCode]);
 

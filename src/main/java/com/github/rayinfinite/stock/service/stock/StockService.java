@@ -1,9 +1,7 @@
 package com.github.rayinfinite.stock.service.stock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.rayinfinite.stock.entity.MarketDepth;
-import com.github.rayinfinite.stock.entity.StockData;
-import com.github.rayinfinite.stock.entity.StockUrlProperties;
+import com.github.rayinfinite.stock.entity.*;
 import com.github.rayinfinite.stock.utils.HttpUtils;
 
 import java.util.List;
@@ -24,9 +22,17 @@ public interface StockService {
 
     List<StockData> getStockData(String stockCode, int period);
 
-    List<StockData> parseJson(String response);
-
     String key();
 
-    MarketDepth getMarketDepth(String stockCode);
+    default MarketDepth getMarketDepth(String stockCode) {
+        throw new UnsupportedOperationException("Market depth is not supported by " + key() + ".");
+    }
+
+    default StockInfo getStockInfo(String stockCode) {
+        throw new UnsupportedOperationException("Stock info is not supported by " + key() + ".");
+    }
+
+    default List<TickTrade> getTickTrade(String stockCode) {
+        throw new UnsupportedOperationException("Tick Trade is not supported by " + key() + ".");
+    }
 }
