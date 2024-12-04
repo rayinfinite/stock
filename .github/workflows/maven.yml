@@ -34,7 +34,7 @@ jobs:
 
       - name: Copy frontend build to Spring Boot static resources
         run: |
-          cp -r /frontend/dist/* /src/main/resources/static/
+          cp -r frontend/dist/* src/main/resources/static/
 
       - name: Build Spring Boot application with Maven
         run: |
