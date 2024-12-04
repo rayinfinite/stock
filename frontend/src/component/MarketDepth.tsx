@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { getMarketDepthData } from "../api";
+import {useEffect, useState} from "react";
+import {getMarketDepthData} from "../api";
 
 interface MarketDepthProps {
   stockCode: string;
@@ -22,6 +22,9 @@ const MarketDepth: React.FC<MarketDepthProps> = ({ stockCode }) => {
   }, [stockCode]);
 
   if (!data) {
+    return null;
+  }
+  if(data.buyVolumes[0]  == "0") {
     return null;
   }
 

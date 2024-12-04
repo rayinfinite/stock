@@ -9,10 +9,9 @@ import com.github.rayinfinite.stock.service.stock.StockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -22,23 +21,27 @@ public class AppService {
     @Value("${stock.platform}")
     private String platform;
 
-    public List<StockData> getStockData(String stockCode,int period) {
-        StockService stockService = StockFactory.getStockStrategy(platform);
-        return stockService.getStockData(stockCode,period);
+    private StockService getStockService() {
+        return StockFactory.getStockStrategy(platform);
     }
 
+    @Cacheable("stockData")
+    public List<StockData> getStockData(String stockCode, int period) {
+        return getStockService().getStockData(stockCode, period);
+    }
+
+    @Cacheable("marketDepth")
     public MarketDepth getMarketDepth(String stockCode) {
-        StockService stockService = StockFactory.getStockStrategy(platform);
-        return stockService.getMarketDepth(stockCode);
+        return getStockService().getMarketDepth(stockCode);
     }
 
+    @Cacheable("stockInfo")
     public StockInfo getStockInfo(String stockCode) {
-        StockService stockService = StockFactory.getStockStrategy(platform);
-        return stockService.getStockInfo(stockCode);
+        return getStockService().getStockInfo(stockCode);
     }
 
+    @Cacheable("tickTrade")
     public List<TickTrade> getTickTrade(String stockCode) {
-        StockService stockService = StockFactory.getStockStrategy(platform);
-        return stockService.getTickTrade(stockCode);
+        return getStockService().getTickTrade(stockCode);
     }
 }

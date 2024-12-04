@@ -1,18 +1,20 @@
-#spring:
-#  datasource:
-##    url: jdbc:postgresql://43.134.23.181:5432/scheduler
-##    url: jdbc:postgresql://localhost:5432/scheduler
-##    driverClassName: org.postgresql.Driver
-##    username: postgres
-##    password: Wasd2333
-#    url: jdbc:h2:file:./data/scheduler;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-#    driverClassName: org.h2.Driver
-#  jpa:
-#    hibernate:
-#      ddl-auto: update
-#    properties:
-#      hibernate:
-#        format_sql: true
+spring:
+  data:
+    redis:
+      password: Wasd2333
+      host: localhost
+      timeout: 3000
+  datasource:
+    url: jdbc:postgresql://localhost:5432/scheduler
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: Wasd2333
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
 stock:
 #  url: https://api.mairui.club/hszbl/fsjy/{id}/dn/036C1631-968C-4CB3-A7BF-EDD824205E03
   platform: xueqiu

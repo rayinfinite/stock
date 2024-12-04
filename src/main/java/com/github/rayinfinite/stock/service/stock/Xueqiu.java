@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.rayinfinite.stock.entity.*;
 import com.github.rayinfinite.stock.entity.exception.WebCrawlerException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class Xueqiu implements StockService {
@@ -46,12 +48,14 @@ public class Xueqiu implements StockService {
         }
         JsonNode itemNode = rootNode.path("data").path("item");
         if (!itemNode.isArray()) {
+            log.error(response);
             throw new IllegalArgumentException("The 'item' node is not an array.");
         }
         List<StockData> result = new ArrayList<>();
         for (Iterator<JsonNode> it = itemNode.elements(); it.hasNext(); ) {
             JsonNode rowNode = it.next();
             if (!rowNode.isArray()) {
+                log.error(response);
                 throw new IllegalArgumentException("Each element in 'item' should be an array.");
             }
 
@@ -164,6 +168,7 @@ public class Xueqiu implements StockService {
         }
         JsonNode itemNode = rootNode.path("data").path("items");
         if (!itemNode.isArray()) {
+            log.error(response);
             throw new IllegalArgumentException("The 'items' node is not an array.");
         }
         List<TickTrade> result = new ArrayList<>();
