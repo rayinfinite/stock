@@ -4,37 +4,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.rayinfinite.stock.entity.MarketDepth;
 import com.github.rayinfinite.stock.entity.StockData;
 import com.github.rayinfinite.stock.entity.StockUrlProperties;
-import com.github.rayinfinite.stock.entity.exception.WebCrawlerException;
+import com.github.rayinfinite.stock.utils.HttpUtils;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 
 public interface StockService {
-    HttpClient client = HttpClient.newHttpClient();
     ObjectMapper objectMapper = new ObjectMapper();
 
     default String getStockData(String stockCode, StockUrlProperties properties) {
         String url = properties.getUrl().replace("{id}", stockCode);
-        HttpRequest request;
-        System.out.println(url);
         if (properties.getHeader().equals("url")) {
             String formattedUrl = properties.getUrl().replace("{token}", properties.getToken());
-            request = HttpRequest.newBuilder().uri(URI.create(formattedUrl)).build();
+            return HttpUtils.get(formattedUrl);
         } else {
-            request = HttpRequest.newBuilder().uri(URI.create(url)).header(properties.getHeader(),
-                    properties.getToken()).build();
-        }
-        try {
-            return client.send(request, HttpResponse.BodyHandlers.ofString()).body();
-        }catch (IOException e) {
-            throw new WebCrawlerException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new WebCrawlerException(e);
+            return HttpUtils.get(url, Map.of(properties.getHeader(), properties.getToken()));
         }
     }
 

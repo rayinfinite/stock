@@ -25,3 +25,35 @@ export async function getStockData(stockCode: string, period: string) {
       return [];
     });
 }
+
+interface MarketDepthType {
+      timestamp: string;
+      stockCode: string;
+      price: string;
+      buyPrices: string[];
+      buyVolumes: string[];
+      sellPrices: string[];
+      sellVolumes: string[];
+      buyPct: string;
+      sellPct: string;
+}
+export async function getMarketDepthData(stockCode: string) {
+  const params = new URLSearchParams({ stockCode}).toString();
+  return await fetch(`${ROOT_PATH}/marketDepth?${params}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const stockData:MarketDepthType = data.data;
+      const convertedStockData = {
+        ...stockData,
+        buyPrices: stockData.buyPrices.map((price: string) => parseFloat(price)),
+        buyVolumes: stockData.buyVolumes.map((volume: string) => parseFloat(volume)),
+        sellPrices: stockData.sellPrices.map((price: string) => parseFloat(price)),
+        sellVolumes: stockData.sellVolumes.map((volume: string) => parseFloat(volume)),
+      };
+      return convertedStockData;
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      return [];
+    });
+}

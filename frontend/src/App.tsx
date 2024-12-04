@@ -4,13 +4,13 @@ import { useViewport } from "./ViewportContext";
 import { init, dispose, Chart, Nullable } from "klinecharts";
 import { getStockData } from "./api";
 import { Input, Radio, RadioChangeEvent } from "antd";
-import ChartComponent from "./ChartComponent";
+import MarketDepth from "./MarketDepth";
 
 const App = () => {
   const viewport = useViewport();
   if (!viewport) return null;
   const [period, setPeriod] = useState("0");
-  const [stockCode, setStockCode] = useState("SZ000001");
+  const [stockCode, setStockCode] = useState<string>("SZ000001");
   const chartRef = useRef<Nullable<Chart>>(null);
 
   useEffect(() => {
@@ -27,6 +27,7 @@ const App = () => {
     { label: "Month", value: "2" },
     { label: "Quarter", value: "3" },
     { label: "Year", value: "4" },
+    { label: "1 Minute", value: "-1" },
   ];
 
   const initChart = () => {
@@ -82,6 +83,7 @@ const App = () => {
         />
       </div>
       <div id="chart" style={{ height: 600 }} />
+      {stockCode && <MarketDepth stockCode={stockCode} />}
     </div>
   );
 };

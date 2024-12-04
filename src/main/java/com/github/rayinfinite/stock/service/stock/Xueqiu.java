@@ -20,14 +20,16 @@ public class Xueqiu implements StockService {
             "symbol={id}&begin={begin}&period={period}&type=before&count=-{count}";
     private static final String HEADER = "cookie";
     private static final List<String> periodList = List.of("day", "week", "month", "quarter", "year");
+    private static final List<String> negativePeriodList = List.of("1m");
     private static final String MARKET_DEPTH_URL = "https://stock.xueqiu.com/v5/stock/realtime/pankou.json?symbol={id}";
     private final StockUrlProperties properties;
 
     @Override
     public List<StockData> getStockData(String stockCode, int period) {
+        String periodIndex = period >= 0 ? periodList.get(period) : negativePeriodList.get(-period - 1);
         String url = STOCK_URL.replace("{begin}", String.valueOf(System.currentTimeMillis()))
                 .replace("{count}", "500")
-                .replace("{period}", periodList.get(period));
+                .replace("{period}", periodIndex);
         properties.setUrl(url);
         properties.setHeader(HEADER);
         String response = getStockData(stockCode.toUpperCase(), properties);
@@ -70,14 +72,11 @@ public class Xueqiu implements StockService {
     public MarketDepth getMarketDepth(String stockCode) {
         properties.setUrl(MARKET_DEPTH_URL);
         properties.setHeader(HEADER);
-        System.out.println(properties.getHeader());
         String response = getStockData(stockCode.toUpperCase(), properties);
-        System.out.println(response);
         return parseMarketDepthJson(response);
     }
 
     public MarketDepth parseMarketDepthJson(String response) {
-        System.out.println(response);
         JsonNode rootNode;
         try {
             rootNode = objectMapper.readTree(response);
@@ -85,9 +84,6 @@ public class Xueqiu implements StockService {
             throw new WebCrawlerException(e);
         }
         JsonNode itemNode = rootNode.path("data");
-//        if (!itemNode.isObject()) {
-//            throw new IllegalArgumentException("The 'item' node is not an object.");
-//        }
         MarketDepth marketDepth = new MarketDepth();
         marketDepth.setStockCode(itemNode.path("symbol").asText());
         marketDepth.setPrice(itemNode.path("current").asText());
@@ -98,11 +94,11 @@ public class Xueqiu implements StockService {
         List<String> buyVolumes = new ArrayList<>();
         List<String> sellPrices = new ArrayList<>();
         List<String> sellVolumes = new ArrayList<>();
-        for(int i=1;i<=5;i++){
-            buyPrices.add(itemNode.path("bp"+i).asText());
-            buyVolumes.add(itemNode.path("bc"+i).asText());
-            sellPrices.add(itemNode.path("sp"+i).asText());
-            sellVolumes.add(itemNode.path("sc"+i).asText());
+        for (int i = 1; i <= 5; i++) {
+            buyPrices.add(itemNode.path("bp" + i).asText());
+            buyVolumes.add("" + itemNode.path("bc" + i).asInt() / 100);// 100股为一手
+            sellPrices.add(itemNode.path("sp" + i).asText());
+            sellVolumes.add("" + itemNode.path("sc" + i).asInt() / 100);
         }
         marketDepth.setBuyPrices(buyPrices);
         marketDepth.setBuyVolumes(buyVolumes);
