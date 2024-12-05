@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Radio, Input, RadioChangeEvent } from "antd";
-import { Chart, dispose, init, Nullable } from "klinecharts";
-import { getStockData } from "../api";
+import React, {useEffect, useRef, useState} from "react";
+import {Input, Radio, RadioChangeEvent} from "antd";
+import {Chart, dispose, init, Nullable} from "klinecharts";
+import {getStockData} from "../api";
 
 interface KLineChartProps {
   stockCode: string;
@@ -55,6 +55,7 @@ const KLineChart: React.FC<KLineChartProps> = ({ stockCode, setStockCode }) => {
   };
   const getData = async (stockCode: string, period: string) => {
     const stockData = await getStockData(stockCode, period);
+    if (stockData.length === 0) return;
     chartRef.current?.applyNewData(stockData);
   };
   return (
