@@ -1,7 +1,11 @@
 package com.github.rayinfinite.stock.service.stock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.rayinfinite.stock.entity.*;
+import com.github.rayinfinite.stock.entity.MarketDepth;
+import com.github.rayinfinite.stock.entity.StockInfo;
+import com.github.rayinfinite.stock.entity.StockUrlProperties;
+import com.github.rayinfinite.stock.entity.TickTrade;
+import com.github.rayinfinite.stock.entity.table.StockData;
 import com.github.rayinfinite.stock.utils.HttpUtils;
 
 import java.util.List;

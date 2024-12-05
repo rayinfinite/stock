@@ -2,8 +2,13 @@ package com.github.rayinfinite.stock.service.stock;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.rayinfinite.stock.entity.*;
+import com.github.rayinfinite.stock.entity.MarketDepth;
+import com.github.rayinfinite.stock.entity.StockInfo;
+import com.github.rayinfinite.stock.entity.StockUrlProperties;
+import com.github.rayinfinite.stock.entity.TickTrade;
 import com.github.rayinfinite.stock.entity.exception.WebCrawlerException;
+import com.github.rayinfinite.stock.entity.table.StockData;
+import com.github.rayinfinite.stock.entity.table.StockDataPrimaryKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -64,8 +69,9 @@ public class Xueqiu implements StockService {
                 row.add(cellNode.asText());
             }
 // "timestamp","volume","open","high","low","close","chg","percent","turnoverrate","amount","volume_post","amount_post"
-            long timestamp = Long.parseLong(row.get(0));
-            StockData stockData = new StockData(timestamp, row.get(2), row.get(5), row.get(3), row.get(4), row.get(1),
+            var primaryKey = new StockDataPrimaryKey();
+            primaryKey.setTimestamp(Long.parseLong(row.get(0)));
+            StockData stockData = new StockData(primaryKey, row.get(2), row.get(5), row.get(3), row.get(4), row.get(1),
                     row.get(8));
             result.add(stockData);
         }

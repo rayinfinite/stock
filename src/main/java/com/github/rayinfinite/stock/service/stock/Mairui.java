@@ -3,9 +3,9 @@ package com.github.rayinfinite.stock.service.stock;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.rayinfinite.stock.entity.MairuiInputData;
-import com.github.rayinfinite.stock.entity.StockData;
 import com.github.rayinfinite.stock.entity.StockUrlProperties;
 import com.github.rayinfinite.stock.entity.exception.WebCrawlerException;
+import com.github.rayinfinite.stock.entity.table.StockData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

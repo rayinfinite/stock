@@ -9,7 +9,7 @@ export async function getStockData(stockCode: string, period: string) {
       const formattedData = stockData.map((item) => {
         return {
           ...item,
-          timestamp: Number(item.timestamp),
+          timestamp: Number(item.id.timestamp),
           open: Number(item.open),
           close: Number(item.close),
           high: Number(item.high),
