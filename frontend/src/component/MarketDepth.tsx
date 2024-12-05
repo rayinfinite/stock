@@ -24,7 +24,7 @@ const MarketDepth: React.FC<MarketDepthProps> = ({ stockCode }) => {
   if (!data) {
     return null;
   }
-  if(data.buyVolumes[0]  == "0") {
+  if (data.buyVolumes[0] == "0") {
     return null;
   }
 
@@ -43,9 +43,9 @@ const MarketDepth: React.FC<MarketDepthProps> = ({ stockCode }) => {
     cumulativeSellVolumes[cumulativeSellVolumes.length - 1]
   );
   return (
-    <div>
-      <h2>Order Book for {data.stockCode}</h2>
-      <p>Current Price: {data.price}</p>
+    <div style={{ minWidth: "200px" }}>
+      <h2>五档盘口</h2>
+      <p>现价: {data.price}</p>
       <div>
         {data.sellPrices
           .slice()
@@ -89,8 +89,8 @@ const MarketDepth: React.FC<MarketDepthProps> = ({ stockCode }) => {
       </div>
 
       <div>
-        <p>Buy Percentage: {data.buyPct}%</p>
-        <p>Sell Percentage: {data.sellPct}%</p>
+        <p>买方占比: {data.buyPct}%</p>
+        <p>卖方占比: {data.sellPct}%</p>
       </div>
     </div>
   );

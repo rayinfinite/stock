@@ -23,12 +23,12 @@ const KLineChart: React.FC<KLineChartProps> = ({ stockCode, setStockCode }) => {
   }, [stockCode, period]);
 
   const periodOptions = [
-    { label: "Day", value: "0" },
-    { label: "Week", value: "1" },
-    { label: "Month", value: "2" },
-    { label: "Quarter", value: "3" },
-    { label: "Year", value: "4" },
-    { label: "1 Minute", value: "-1" },
+    { label: "日K", value: "0" },
+    { label: "周K", value: "1" },
+    { label: "月K", value: "2" },
+    { label: "季K", value: "3" },
+    { label: "年K", value: "4" },
+    { label: "1分", value: "-1" },
   ];
 
   const initChart = () => {

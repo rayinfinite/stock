@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { getTickTradeData } from "../api";
+import {useEffect, useState} from "react";
+import {getTickTradeData} from "../api";
 
 interface MarketDepthProps {
   stockCode: string;
@@ -27,7 +27,7 @@ const TickTrade: React.FC<MarketDepthProps> = ({ stockCode }) => {
 
   return (
     <div>
-      <h2>Transaction Detail</h2>
+      <h2>逐笔交易历史</h2>
       <div>
         {data.map((price, index) => (
           <div key={index} style={{ display: "flex", justifyContent: "space-between", maxWidth: 200 }}>

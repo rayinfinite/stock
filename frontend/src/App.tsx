@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useViewport } from "./ViewportContext";
+import {useState} from "react";
+import {useViewport} from "./ViewportContext";
 
 import MarketDepth from "./component/MarketDepth";
 import StockInfo from "./component/StockInfo";
@@ -13,7 +13,7 @@ const App = () => {
 
   return (
     <div style={{ padding: viewport.width > 660 ? "0px 24px" : "0" }}>
-      <h1>Stock Analyse System</h1>
+      <h1>股票行情系统</h1>
       {stockCode && <StockInfo stockCode={stockCode} />}
       <KLineChart stockCode={stockCode} setStockCode={setStockCode} />
       {stockCode && (

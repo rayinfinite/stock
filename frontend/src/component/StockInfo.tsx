@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { getStockInfo, StockInfoType } from "../api";
-import { Col, Row } from "antd";
+import React, {useEffect, useState} from "react";
+import {getStockInfo, StockInfoType} from "../api";
+import {Col, Row} from "antd";
 
 interface MarketDepthProps {
   stockCode: string;
@@ -36,7 +36,7 @@ const StockInfo: React.FC<MarketDepthProps> = ({ stockCode }) => {
         style={{
           display: "flex",
           alignItems: "center",
-          color: Number(data.change) > 0 ? "red" : "green",
+          color: Number(data.change) == 0 ? "black" : Number(data.change) > 0 ? "red" : "green",
           fontSize: "20px",
         }}
       >
