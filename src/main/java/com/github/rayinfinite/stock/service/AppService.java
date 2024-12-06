@@ -34,7 +34,7 @@ public class AppService {
             data.getId().setStockCode(stockCode);
             data.getId().setPeriod(period);
         }
-        new Thread(() -> {
+        Thread.startVirtualThread(() -> {
             boolean exists = repository.existsByIdStockCodeAndIdPeriod(stockCode, period);
             List<StockData> newList = stockDataList.subList(0, Math.max(0, stockDataList.size() - 1));
             if(!exists) {
@@ -45,7 +45,7 @@ public class AppService {
                 List<StockData> filterList = newList.stream().filter(stockData -> stockData.getId().getTimestamp() > lastData.getId().getTimestamp()).toList();
                 repository.saveAll(filterList);
             }
-        }).start();
+        });
         return stockDataList;
     }
 
