@@ -26,6 +26,10 @@ public interface StockService {
 
     List<StockData> getStockData(String stockCode, int period);
 
+    default List<StockData> getStockData(String stockCode, int period, int count, long endTime){
+        throw new UnsupportedOperationException("Get stock data with count and end time is not supported by " + key() + ".");
+    }
+
     String key();
 
     default MarketDepth getMarketDepth(String stockCode) {

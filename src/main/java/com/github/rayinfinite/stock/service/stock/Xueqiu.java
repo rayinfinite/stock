@@ -34,9 +34,14 @@ public class Xueqiu implements StockService {
 
     @Override
     public List<StockData> getStockData(String stockCode, int period) {
+        return getStockData(stockCode, period, 500, System.currentTimeMillis());
+    }
+
+    @Override
+    public List<StockData> getStockData(String stockCode, int period, int count, long endTime) {
         String periodIndex = period >= 0 ? periodList.get(period) : negativePeriodList.get(-period - 1);
-        String url = STOCK_URL.replace("{begin}", String.valueOf(System.currentTimeMillis()))
-                .replace("{count}", "500")
+        String url = STOCK_URL.replace("{begin}", String.valueOf(endTime))
+                .replace("{count}", String.valueOf(count))
                 .replace("{period}", periodIndex);
         properties.setUrl(url);
         properties.setHeader(HEADER);

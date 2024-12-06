@@ -38,8 +38,12 @@ public class AppService {
             boolean exists = repository.existsByIdStockCodeAndIdPeriod(stockCode, period);
             List<StockData> newList = stockDataList.subList(0, Math.max(0, stockDataList.size() - 1));
             if(!exists) {
-                repository.saveAll(newList);
-                //TODO: 提取更早的数据
+                while(!newList.isEmpty()){
+                    repository.saveAll(newList);
+                    StockData firstData = newList.getFirst();
+                    newList= getStockService().getStockData(stockCode, period, 500,
+                            firstData.getId().getTimestamp());
+                }
             }else{
                 StockData lastData = repository.findTopByStockCodeAndPeriodOrderByTimestampDesc(stockCode, period);
                 List<StockData> filterList = newList.stream().filter(stockData -> stockData.getId().getTimestamp() > lastData.getId().getTimestamp()).toList();
